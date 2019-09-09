@@ -54,6 +54,10 @@ export type ClassroomProps = RouteComponentProps<{
     userId: string;
     netlessRoomType: NetlessRoomType;
 }>;
+
+// TODO: Origin Sources: AgoraRTC.createClient -> agoraClient.init -> agoraClient.join -> AgoraRTC.createStream -> localStream.init -> localStream.play -> agoraClient.publish
+// TODO: Convert To: new ZegoCilent -> zegoClient.init -> zegoClient.join ->zegoClient.startPreview -> zegoClient.publish
+
 export type ClassroomState = {
     phase: RoomPhase;
     connectedFail: boolean;
@@ -590,10 +594,6 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
     private startRtc = (uid: number, channelId: string, room: Room): void => {
         const {netlessRoomType} = this.props.match.params;
         if (!this.agoraClient) {
-            // const agoraClient = AgoraRTC.createClient({mode: "live", codec: "h264"});
-            // AgoraRTS.init(AgoraRTC);
-            // AgoraRTS.proxy(agoraClient);
-            // this.agoraClient = agoraClient;
             this.agoraClient = AgoraRTC.createClient({mode: "live", codec: "h264"});
             this.agoraClient.init(rtcAppId.agoraAppId, () => {
                 console.log("AgoraRTC client initialized");

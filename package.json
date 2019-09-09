@@ -2,7 +2,7 @@
   "name": "netless-rtc-react-whiteboard",
   "version": "2.0.0",
   "main": "./main.js",
-  "author": "Wushuang",
+  "author": "zego.im",
   "license": "MIT",
   "theme": "./theme.js",
   "private": true,
