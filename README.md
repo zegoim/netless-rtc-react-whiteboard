@@ -17,7 +17,7 @@
     - 云存储
     - 音视频
 
-    该 demo 使用的是 netless 自研的互动白板，阿里云的云存储，声网的音视频通讯服务作为基础选型。
+    该 demo 使用的是 netless 自研的互动白板，阿里云的云存储，Zego 的音视频通讯服务作为基础选型。
 
 2. 填写 `appTokenConfig.ts` 文件  
 
@@ -28,6 +28,10 @@
         accessKeyId: "xxx",
         accessKeySecret: "xxx",
         region: "oss-cn-xxx",
+        zegoConfig: {
+            appId: "xxxxxxxxxx",
+            appSign: []
+        },
         bucket: "xxx",
         folder: "xxx",
         prefix: "https://xxx.oss-cn-xxx.aliyuncs.com/",
@@ -75,13 +79,21 @@
 
 1. 用途：音视频实时通信。
 2. 获取方式：
-   - 地址：https://dashboard.agora.io/
-    ![1558250731260](https://ohuuyffq2.qnssl.com/1558250731260.png)
-3. 填写参数
-  
+   - 地址：https://console.zego.im/acount/register
+3. 填写 `appTokenConfig.ts` 文件  
+
+    ``` typescript
+    export const netlessToken = "xxx";
+    
+    export const ossConfigObj = {
+        zegoConfig: {
+            appId: "xxxxxxxxxx",
+            appSign: []
+        },
+    };
+    
     ```
-    export const rtcAppId = "xxx";
-    ```
+
     
 ### 5. 注意事项
 
