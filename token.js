@@ -7,10 +7,14 @@ const region = process.env.region;
 const bucket = process.env.bucket;
 const folder = process.env.folder;
 const prefix = process.env.prefix;
-const agoraAppId = process.env.agoraAppId;
+const appId = process.env.appId;
+const signKey = process.env.signKey;
+
+config.zegoConfig = {};
+config.zegoConfig.appId = appId;
+config.zegoConfig.signKey = signKey;
 
 config.netlessToken = netlessToken;
-config.agoraAppId = agoraAppId;
 config.ossConfigObj = {};
 config.ossConfigObj.accessKeyId = accessKeyId;
 config.ossConfigObj.accessKeySecret = accessKeySecret;

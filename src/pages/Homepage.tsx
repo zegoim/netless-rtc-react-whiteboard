@@ -49,17 +49,7 @@ class Homepage extends React.Component<HomepageProps, HomepageStates> {
                 window.open(this.state.url);
             } else {
                 if (this.state.url.length === 32) {
-                    const isNotLive = this.state.url.search("live") === -1;
-                    if (isNotLive) {
-                        const isNotInteractive = this.state.url.search("live") === -1;
-                        if (isNotInteractive) {
-                            this.props.history.push(`/classroom/${NetlessRoomType.teacher_interactive}/${this.state.url}/`);
-                        } else {
-                            this.props.history.push(`/classroom/${NetlessRoomType.interactive}/${this.state.url}/`);
-                        }
-                    } else {
-                        this.props.history.push(`/classroom/${NetlessRoomType.live}/${this.state.url}/`);
-                    }
+                    this.props.history.push(`/classroom/${NetlessRoomType.student_interactive}/${this.state.url}/`);
                 }
             }
         }

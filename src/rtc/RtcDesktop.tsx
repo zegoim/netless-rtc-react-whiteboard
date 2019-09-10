@@ -4,7 +4,7 @@ const timeout = (ms: any) => new Promise(res => setTimeout(res, ms));
 import video from "./icons/video_white.svg";
 import {ExtendingPosition, FloatingPosition, HidingPosition} from "./RtcSlidingBlockPosition";
 import {SlidingBlockMask} from "./SlidingBlockMask";
-const AgoraRTC = require("./rtsLib/AgoraRTC-production.js");
+const AgoraRTC  = null as any;
 import {RtcBlockContextProvider} from "./RtcBlockContext";
 import TweenOne from "rc-tween-one";
 import "./RtcDesktop.less";

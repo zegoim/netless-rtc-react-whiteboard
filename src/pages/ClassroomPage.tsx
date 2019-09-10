@@ -43,8 +43,6 @@ import WhiteboardTopRight from "../components/whiteboard/WhiteboardTopRight";
 import WhiteboardBottomLeft from "../components/whiteboard/WhiteboardBottomLeft";
 import WhiteboardRecord from "../components/whiteboard/WhiteboardRecord";
 import WhiteboardBottomRight, {MessageType} from "../components/whiteboard/WhiteboardBottomRight";
-const AgoraRTC = require("../rtc/rtsLib/AgoraRTC-production.js");
-// const AgoraRTS = require("../rtc/rtsLib/AgoraRTS.js");
 import WhiteboardChat from "../components/whiteboard/WhiteboardChat";
 const timeout = (ms: any) => new Promise(res => setTimeout(res, ms));
 import ToolBoxMobile from "@netless/react-mb-tool-box";
@@ -54,9 +52,11 @@ export type ClassroomProps = RouteComponentProps<{
     userId: string;
     netlessRoomType: NetlessRoomType;
 }>;
+import { SilverRoom } from "../rtc/SilverRoom";
+const { zegoConfig } = require("../tokenConfig");
 
 // TODO: Origin Sources: AgoraRTC.createClient -> agoraClient.init -> agoraClient.join -> AgoraRTC.createStream -> localStream.init -> localStream.play -> agoraClient.publish
-// TODO: Convert To: new ZegoCilent -> zegoClient.init -> zegoClient.join ->zegoClient.startPreview -> zegoClient.publish
+// TODO: Convert To: new SilverRoomCache -> silverRoomCache.initSDK. silverRoomCache.join ->silverRoomCache.startPreview -> silverRoomCache.publish -> silverRoomCache.stopPublish -> silverRoomCache.stopPreview -> silverRoomCache.leave -> silverRoomCache.unInitSDK
 
 export type ClassroomState = {
     phase: RoomPhase;
@@ -89,7 +89,7 @@ export type ClassroomState = {
 class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
     private readonly cursor: UserCursor;
     private didLeavePage: boolean = false;
-    private agoraClient: any;
+    private silverRoom: SilverRoom;
     private localStream: any;
     public constructor(props: ClassroomProps) {
         super(props);
@@ -223,14 +223,10 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
 
     public componentWillUnmount(): void {
         this.didLeavePage = true;
-        if (this.agoraClient) {
-            this.agoraClient.leave(() => {
-                console.log("Leave channel successfully");
-                if (this.localStream) {
-                    this.localStream.stop();
-                    this.localStream.close();
-                }
-            });
+        if (this.silverRoom) {
+            this.stop();
+            this.silverRoom.unInitSDK();
+            delete this.silverRoom;
         }
         window.removeEventListener("resize", this.onWindowResize);
     }
@@ -309,19 +305,18 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
     private setStopTime = (time: number): void => {
         this.setState({stopRecordTime: time});
     }
-    private stop = (): void => {
-        this.agoraClient.leave(() => {
-            console.log("Leave channel successfully");
-            this.setState({isRtcStart: false});
-            // this.setMediaState(false);
-            if (this.localStream) {
-                this.localStream.stop();
-                this.localStream.close();
+    private stop = async () => {
+        const {netlessRoomType} = this.props.match.params;
+        if (netlessRoomType === NetlessRoomType.teacher_interactive) {
+            await this.silverRoom.stopPublish();
+            await this.silverRoom.stopPreview();
+        } else {
+            if (this.remoteStreamId) {
+                await this.silverRoom.stopPlayingStream(this.remoteStreamId);
             }
-            this.setState({isMaskAppear: false});
-        }, (err: any) => {
-            console.log("Leave channel failed");
-        });
+        }
+        await this.silverRoom.leave();
+        await this.setState({ isRtcStart: false, isMaskAppear: false });
     }
     public render(): React.ReactNode {
         const {netlessRoomType} = this.props.match.params;
@@ -443,8 +438,7 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
                         </Dropzone>
                         <div className={isMobile ? "classroom-box-right-mb" : "classroom-box-right"}>
                             <div className={isMobile ? "classroom-box-video-mb" : "classroom-box-video"}>
-                                {this.state.isRtcStart ?
-                                    <div className="classroom-box-video-mid">
+                                    <div style={{ display: this.state.isRtcStart ? void 0 : "none"}} className="classroom-box-video-mid">
                                         {this.state.isMaskAppear &&
                                         <div className="classroom-box-video-mask">
                                             <Button
@@ -456,13 +450,13 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
                                         }} className="classroom-box-video-set">
                                             {this.state.isMaskAppear ? <img style={{width: 14}} src={close_white}/> : <img src={set_video}/>}
                                         </div>
-                                        <div className="classroom-box-teacher-video">
-                                            <div id="netless-teacher" className="classroom-box-teacher-layer-1">
-                                            </div>
-                                            <div className="classroom-box-teacher-layer-2">
-                                                <img src={teacher}/>
-                                            </div>
-                                        </div>
+
+                                        <video
+                                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                            ref={videoEl => this.videoEl = videoEl}
+                                            autoPlay
+                                        />
+
                                         <div className={isMobile ? "classroom-box-students-video-mb" : "classroom-box-students-video"}>
                                             <div className="classroom-box-student-cell">
                                                 <div id="netless-student-1" className="classroom-box-student-layer-1">
@@ -486,21 +480,20 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
                                                 </div>
                                             </div>
                                         </div>
-                                    </div> :
-                                    <div className="classroom-box-video-mid-2">
+                                    </div>
+                                    <div style={{ display: this.state.isRtcStart ? "none" : void 0}}className="classroom-box-video-mid-2">
                                         <div className="classroom-box-video-mid-inner">
                                             <img style={{width: 108, marginBottom: 24}} src={camera}/>
                                             <Button
                                                 style={{width: 108}}
                                                 onClick={() => this.startRtc(parseInt(this.state.userId), this.props.match.params.uuid, this.state.room!)}
-                                                type="primary">开始视频通讯</Button>
+                                                type="primary">{netlessRoomType === NetlessRoomType.teacher_interactive ? "发布教室视频" : "播放教室视频"}</Button>
                                             {/*<Radio.Group style={{marginTop: 16}} value="large">*/}
                                                 {/*<Radio.Button value="large">双人高清</Radio.Button>*/}
                                                 {/*<Radio.Button value="default">四人普清</Radio.Button>*/}
                                             {/*</Radio.Group>*/}
                                         </div>
                                     </div>
-                                }
                             </div>
                             {!isMobile && <div className="classroom-box-chart">
                                 <WhiteboardChat
@@ -591,146 +584,38 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
             message.error("join fail");
         }
     }
-    private startRtc = (uid: number, channelId: string, room: Room): void => {
+
+    public videoEl: HTMLVideoElement | null;
+    public remoteStreamId: string;
+    private startRtc = async (streamId: number, roomId: string, room: Room) => {
         const {netlessRoomType} = this.props.match.params;
-        if (!this.agoraClient) {
-            this.agoraClient = AgoraRTC.createClient({mode: "live", codec: "h264"});
-            this.agoraClient.init(rtcAppId.agoraAppId, () => {
-                console.log("AgoraRTC client initialized");
-            }, (err: any) => {
-                console.log("AgoraRTC client init failed", err);
-            });
+        let { silverRoom } = this;
+        if (!silverRoom) {
+            const { appId, signKey } = zegoConfig;
+            silverRoom = new SilverRoom();
+            this.silverRoom = silverRoom;
+            silverRoom.initSDK({ appId, signKey });
         }
 
-        if (netlessRoomType === NetlessRoomType.live) {
-            this.agoraClient.join(rtcAppId.agoraAppId, channelId, uid, (userRtcId: number) => {
-                this.setState({isRtcStart: true});
-            }, (err: any) => {
-                console.log(err);
-            });
+        const userId = uuidv4();
+        if (netlessRoomType === NetlessRoomType.teacher_interactive) {
+            silverRoom.join({ roomId, userId });
+            const publishStreamId = uuidv4();
+            if (this.videoEl) {
+                await silverRoom.startPreview(this.videoEl);
+            }
+            silverRoom.publish(publishStreamId);
         } else {
-            let localStream: any;
-            let userRtcId: number;
-            if (netlessRoomType === NetlessRoomType.teacher_interactive) {
-                userRtcId = 52;
-                localStream = AgoraRTC.createStream({
-                        streamID: 52,
-                        audio: true,
-                        video: true,
-                        screen: false,
-                    },
-                );
-            } else if (netlessRoomType === NetlessRoomType.interactive) {
-                if (room.state.roomMembers.length === 2) {
-                    userRtcId = 1;
-                    localStream = AgoraRTC.createStream({
-                            streamID: 1,
-                            audio: true,
-                            video: true,
-                            screen: false,
-                        },
-                    );
-                } else if (room.state.roomMembers.length === 3) {
-                    userRtcId = 2;
-                    localStream = AgoraRTC.createStream({
-                            streamID: 2,
-                            audio: true,
-                            video: true,
-                            screen: false,
-                        },
-                    );
-                } else if (room.state.roomMembers.length === 4) {
-                    userRtcId = 3;
-                    localStream = AgoraRTC.createStream({
-                            streamID: 3,
-                            audio: true,
-                            video: true,
-                            screen: false,
-                        },
-                    );
-                } else {
-                    userRtcId = uid;
-                    localStream = AgoraRTC.createStream({
-                            streamID: uid,
-                            audio: true,
-                            video: true,
-                            screen: false,
-                        },
-                    );
+            silverRoom.handleStreamsUpdate = (streamList: any[]) => {
+                const firstStream = streamList[0];
+                if (firstStream && this.videoEl) {
+                    this.remoteStreamId = firstStream.stream_id;
+                    silverRoom.playStream({ viewEl: this.videoEl, streamId: this.remoteStreamId });
                 }
-            }
-            localStream.setVideoProfile("480p_2");
-            this.localStream = localStream;
-            this.localStream.init(()  => {
-                console.log("getUserMedia successfully");
-                this.setState({isRtcStart: true});
-                this.setMediaState(true);
-                if (netlessRoomType === NetlessRoomType.teacher_interactive) {
-                    this.localStream.play("netless-teacher");
-                } else if (netlessRoomType === NetlessRoomType.interactive) {
-                    if (room.state.roomMembers.length === 2) {
-                        this.localStream.play("netless-student-1");
-                    } else if (room.state.roomMembers.length === 3) {
-                        this.localStream.play("netless-student-2");
-                    } else if (room.state.roomMembers.length === 4) {
-                        this.localStream.play("netless-student-3");
-                    }
-                }
-                this.agoraClient.join(rtcAppId.agoraAppId, channelId, userRtcId, (userRtcId: number) => {
-                    this.agoraClient.publish(localStream, (err: any) => {
-                        console.log("Publish local stream error: " + err);
-                    });
-                }, (err: any) => {
-                    console.log(err);
-                });
-            }, (err: any) => {
-                console.log("getUserMedia failed", err);
-            });
+            };
+            silverRoom.join({ roomId, userId });
         }
-        this.agoraClient.on("stream-published", () => {
-            console.log("Publish local stream successfully");
-        });
-        this.agoraClient.on("stream-added",  (evt: any) => {
-            const stream = evt.stream;
-            console.log("New stream added: " + stream.getId());
-            this.agoraClient.subscribe(stream, { video: true, audio: true });
-        });
-        this.agoraClient.on("peer-leave", (evt: any) => {
-            const stream = evt.stream;
-            if (stream.getId() === 52) {
-                const videoNode = document.getElementById("netless-teacher");
-                if (videoNode && videoNode.children[0]) {
-                    videoNode.removeChild(videoNode.children[0]);
-                }
-            } else if (stream.getId() <= 3) {
-                const videoNode = document.getElementById(`netless-student-${stream.getId()}`);
-                if (videoNode && videoNode.children[0]) {
-                    videoNode.removeChild(videoNode.children[0]);
-                }
-            }
-            console.log("remote user left ", stream.getId());
-        });
-        this.agoraClient.on("stream-subscribed", (evt: any) => {
-            const remoteStream = evt.stream;
-            if (remoteStream.getId() === 52) {
-                remoteStream.play("netless-teacher");
-            } else {
-                remoteStream.play(`netless-student-${remoteStream.getId()}`);
-            }
-            console.log("Subscribe remote stream successfully: " + remoteStream.getId());
-        });
-        this.agoraClient.on("mute-video", (evt: any) => {
-            const uid = evt.uid;
-        });
-        this.agoraClient.on("unmute-video", (evt: any) => {
-            const uid = evt.uid;
-        });
-        this.agoraClient.on("mute-audio", (evt: any) => {
-            const uid = evt.uid;
-        });
-        this.agoraClient.on("unmute-audio", (evt: any) => {
-            const uid = evt.uid;
-        });
+        this.setState({ isRtcStart: true });
     }
 }
 

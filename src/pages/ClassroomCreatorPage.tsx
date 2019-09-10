@@ -15,12 +15,13 @@ export enum NetlessRoomType {
     live = "live",
     interactive = "interactive",
     teacher_interactive = "teacher_interactive",
+    student_interactive = "student_interactive",
 }
+
 export type ClassroomCreatorPageProps = RouteComponentProps<{
     netlessRoomType: NetlessRoomType;
     uuid?: string;
 }>;
-
 
 class ClassroomCreatorPage extends React.Component<ClassroomCreatorPageProps, ClassroomCreatorPageState> {
 
