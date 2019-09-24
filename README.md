@@ -1,4 +1,4 @@
-# netless-agora-react-whiteboard
+# netless-react-whiteboard
 
 ## 一、前言
 
@@ -138,7 +138,6 @@ export const ossConfigObj = {
     prefix: "",
 };
 
-export const agoraAppId = "";
 ```
 
 ### 5. 启动
