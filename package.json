@@ -9,8 +9,9 @@
   "proxy": "http://localhost:3009/",
   "scripts": {
     "start": "react-app-rewired start --scripts-version react-scripts-ts",
-    "build": "rimraf build && NODE_ENV=production react-app-rewired --max-old-space-size=4096 build --scripts-version react-scripts-ts",
-    "build:app": "rm -rf ./dist && electron-builder build --win --x64 && electron-builder build --mac --x64"
+    "build": "rimraf build && cross-env NODE_ENV=production react-app-rewired --max-old-space-size=32276 build --scripts-version react-scripts-ts",
+    "build:app": "rm -rf ./dist && electron-builder build --win --x64 && electron-builder build --mac --x64",
+    "deploy": "ssh root@120.78.126.222 'rm -rf /data/classroom' && scp -r ./build/ root@120.78.126.222:/data/classroom"
   },
   "build": {
     "appId": "netless",
@@ -68,6 +69,7 @@
     "@types/uuid": "^3.4.4",
     "@types/video.js": "^7.2.10",
     "@types/webaudioapi": "^0.0.27",
+    "cross-env": "^6.0.0",
     "fork-ts-checker-webpack-plugin": "^1.3.4",
     "js-yaml": "^3.12.0",
     "react-app-rewire-define-plugin": "^1.0.0",

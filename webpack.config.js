@@ -83,7 +83,7 @@ const basic = {
             path: __dirname + "/build",
             inject: "body",
         }),
-        new ForkTsCheckerWebpackPlugin({ memoryLimit : 10000, workers: 2 })
+        // new ForkTsCheckerWebpackPlugin({ memoryLimit : 10000, workers: 2 })
     ]
 };
 
