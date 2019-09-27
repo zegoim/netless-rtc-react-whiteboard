@@ -102,6 +102,7 @@ export class SilverRoom extends ZegoClient {
       this._cacheSDKConfig.loginToken = await getLoginToken() as string;
     }
 
+    console.error(this._cacheSDKConfig.loginToken);
     return new Promise((resolve, reject) => {
       this.login(decodeURIComponent(para.roomId), 2, this._cacheSDKConfig.loginToken, streamList => {
         this._cacheSDKConfig.streamList = streamList;
@@ -196,8 +197,8 @@ export class SilverRoom extends ZegoClient {
    */
   playStream = (stream: { viewEl: HTMLCanvasElement | HTMLVideoElement, streamId: string }) => {
     if (!this._cacheSDKConfig.playingStreamIds.includes(stream.streamId)) {
-      this._cacheSDKConfig.playingStreamIds.push(stream.streamId);
       this.startPlayingStream(stream.streamId, stream.viewEl);
+      this._cacheSDKConfig.playingStreamIds.push(stream.streamId);
     }
   }
   /**
@@ -216,6 +217,10 @@ export class SilverRoom extends ZegoClient {
    */
   stopPlayStream = (stream: { streamId: string; }) => {
     this.stopPlayingStream(stream.streamId);
+    const index = this._cacheSDKConfig.playingStreamIds.indexOf(stream.streamId)
+    if (index > -1) {
+      this._cacheSDKConfig.playingStreamIds.splice(index, -1);
+    }
   }
 
   /**

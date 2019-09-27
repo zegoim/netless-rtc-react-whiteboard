@@ -216,6 +216,7 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
     }
     public async componentDidMount(): Promise<void> {
         await this.startJoinRoom();
+        await this.startRtc(parseInt(this.state.userId), this.props.match.params.uuid, this.state.room!);
         if (this.state.room && this.state.room.state.roomMembers) {
             this.cursor.setColorAndAppliance(this.state.room.state.roomMembers);
         }
@@ -225,6 +226,7 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
         this.didLeavePage = true;
         if (this.silverRoom) {
             this.stop();
+            this.silverRoom.leave();
             this.silverRoom.unInitSDK();
             delete this.silverRoom;
         }
@@ -315,7 +317,7 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
                 await this.silverRoom.stopPlayingStream(this.remoteStreamId);
             }
         }
-        await this.silverRoom.leave();
+        // await this.silverRoom.leave();
         await this.setState({ isRtcStart: false, isMaskAppear: false });
     }
     public render(): React.ReactNode {
@@ -587,8 +589,11 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
 
     public videoEl: HTMLVideoElement | null;
     public remoteStreamId: string;
+
     private startRtc = async (streamId: number, roomId: string, room: Room) => {
         const {netlessRoomType} = this.props.match.params;
+
+        const userId = uuidv4();
         let { silverRoom } = this;
         if (!silverRoom) {
             const { appId, signKey } = zegoConfig;
@@ -597,7 +602,6 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
             silverRoom.initSDK({ appId, signKey });
         }
 
-        const userId = uuidv4();
         if (netlessRoomType === NetlessRoomType.teacher_interactive) {
             silverRoom.join({ roomId, userId });
             const publishStreamId = uuidv4();
