@@ -1,0 +1,43 @@
+{
+  "_from": "webrtc-zego@1.2.2",
+  "_id": "webrtc-zego@1.2.2",
+  "_inBundle": false,
+  "_integrity": "sha512-U7QcyuVQzkR3bIVrHPlO0D5OEG31XR2Geh1rBbeCcKPEhk6aayAUH1Kou6BAfdn+P+Ot8b+NFHytREjDANCzAg==",
+  "_location": "/webrtc-zego",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "webrtc-zego@1.2.2",
+    "name": "webrtc-zego",
+    "escapedName": "webrtc-zego",
+    "rawSpec": "1.2.2",
+    "saveSpec": null,
+    "fetchSpec": "1.2.2"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/webrtc-zego/-/webrtc-zego-1.2.2.tgz",
+  "_shasum": "8526f378e4279a5e993733e3981dba6e739d4579",
+  "_spec": "webrtc-zego@1.2.2",
+  "_where": "C:\\Work\\netless-rtc-react-whiteboard",
+  "author": {
+    "name": "zegodev"
+  },
+  "bundleDependencies": false,
+  "dependencies": {},
+  "deprecated": false,
+  "description": "zego webrtc sdk",
+  "keywords": [
+    "sdk",
+    "zego",
+    "webrtc"
+  ],
+  "license": "ISC",
+  "main": "./jZego-rtc.js",
+  "name": "webrtc-zego",
+  "typings": "./sdk/webrtc/zego.client.web.d.ts",
+  "version": "1.2.2"
+}

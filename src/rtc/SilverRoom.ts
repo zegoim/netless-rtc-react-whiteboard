@@ -1,6 +1,6 @@
 /* tslint:disable */
-import { ZegoClient } from "webrtc-zego";
-import { MediaStreamConstraints, Config, StreamInfo } from "webrtc-zego/sdk/common/zego.entity";
+import { ZegoClient } from "../rtc/webrtc-zego";
+import { MediaStreamConstraints, Config, StreamInfo } from "../rtc/webrtc-zego/sdk/common/zego.entity";
 
 interface SilverRoomCache {
   appId: number;
@@ -105,6 +105,7 @@ export class SilverRoom extends ZegoClient {
     console.error(this._cacheSDKConfig.loginToken);
     return new Promise((resolve, reject) => {
       this.login(decodeURIComponent(para.roomId), 2, this._cacheSDKConfig.loginToken, streamList => {
+        console.error("++++++",  streamList);
         this._cacheSDKConfig.streamList = streamList;
         resolve({ streamList });
         if (this.handleStreamsUpdate) {
@@ -196,8 +197,8 @@ export class SilverRoom extends ZegoClient {
    * @param {string} stream.streamId - 播放音视频的流 id
    */
   playStream = (stream: { viewEl: HTMLCanvasElement | HTMLVideoElement, streamId: string }) => {
+    const code = this.startPlayingStream(stream.streamId, stream.viewEl);
     if (!this._cacheSDKConfig.playingStreamIds.includes(stream.streamId)) {
-      this.startPlayingStream(stream.streamId, stream.viewEl);
       this._cacheSDKConfig.playingStreamIds.push(stream.streamId);
     }
   }

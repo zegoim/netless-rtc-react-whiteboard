@@ -216,7 +216,7 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
     }
     public async componentDidMount(): Promise<void> {
         await this.startJoinRoom();
-        await this.startRtc(parseInt(this.state.userId), this.props.match.params.uuid, this.state.room!);
+        // await this.startRtc(parseInt(this.state.userId), this.props.match.params.uuid, this.state.room!);
         if (this.state.room && this.state.room.state.roomMembers) {
             this.cursor.setColorAndAppliance(this.state.room.state.roomMembers);
         }
