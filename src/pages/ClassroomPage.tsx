@@ -603,21 +603,31 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
         }
 
         if (netlessRoomType === NetlessRoomType.teacher_interactive) {
-            silverRoom.join({ roomId, userId });
-            const publishStreamId = uuidv4();
-            if (this.videoEl) {
-                await silverRoom.startPreview(this.videoEl);
-            }
-            silverRoom.publish(publishStreamId);
-        } else {
-            silverRoom.handleStreamsUpdate = (streamList: any[]) => {
-                const firstStream = streamList[0];
-                if (firstStream && this.videoEl) {
-                    this.remoteStreamId = firstStream.stream_id;
-                    silverRoom.playStream({ viewEl: this.videoEl, streamId: this.remoteStreamId });
+            const loginRoom = async () => {
+                silverRoom.join({ roomId, userId });
+                const publishStreamId = uuidv4();
+                if (this.videoEl) {
+                    await silverRoom.startPreview(this.videoEl);
                 }
+                silverRoom.publish(publishStreamId);
             };
-            silverRoom.join({ roomId, userId });
+
+            silverRoom.onDisconnect = loginRoom;
+            loginRoom();
+        } else {
+            const loginRoom = async () => {
+                silverRoom.handleStreamsUpdate = (streamList: any[]) => {
+                    const firstStream = streamList[0];
+                    if (firstStream && this.videoEl) {
+                        this.remoteStreamId = firstStream.stream_id;
+                        silverRoom.playStream({ viewEl: this.videoEl, streamId: this.remoteStreamId });
+                    }
+                };
+                silverRoom.join({ roomId, userId });
+            };
+
+            silverRoom.onDisconnect = loginRoom;
+            loginRoom();
         }
         this.setState({ isRtcStart: true });
     }
