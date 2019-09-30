@@ -237,7 +237,7 @@
                 disconnect: 0,
                 connecting: 1,
                 connected: 2
-            }, t.MAX_TRY_CONNECT_COUNT = 3, t.SEND_MSG_RESET = 2, t.SEND_MSG_TIMEOUT = 1, t.MAX_TRY_HEARTBEAT_COUNT = 5, t.ENUM_PUBLISH_STREAM_STATE = {
+            }, t.MAX_TRY_CONNECT_COUNT = 20, t.SEND_MSG_RESET = 2, t.SEND_MSG_TIMEOUT = 1, t.MAX_TRY_HEARTBEAT_COUNT = 5, t.ENUM_PUBLISH_STREAM_STATE = {
                 waiting_url: 1,
                 tryPublish: 2,
                 update_info: 3,

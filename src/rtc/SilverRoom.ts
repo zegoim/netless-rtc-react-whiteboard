@@ -106,6 +106,7 @@ export class SilverRoom extends ZegoClient {
     return new Promise((resolve, reject) => {
       this.login(decodeURIComponent(para.roomId), 2, this._cacheSDKConfig.loginToken, streamList => {
         console.error("++++++",  streamList);
+        this.publish(this._cacheSDKConfig.publishStreamId);
         this._cacheSDKConfig.streamList = streamList;
         resolve({ streamList });
         if (this.handleStreamsUpdate) {
