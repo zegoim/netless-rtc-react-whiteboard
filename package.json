@@ -53,7 +53,7 @@
     "react-identicons": "^1.1.7",
     "uuid": "^3.3.2",
     "webrtc-zego": "^1.2.2",
-    "white-react-sdk": "^2.3.7"
+    "white-react-sdk": "^2.3.9"
   },
   "devDependencies": {
     "@types/ali-oss": "^6.0.3",
