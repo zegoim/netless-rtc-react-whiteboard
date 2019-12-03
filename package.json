@@ -11,7 +11,7 @@
     "start": "react-app-rewired start --scripts-version react-scripts-ts",
     "build": "rimraf build && cross-env NODE_ENV=production react-app-rewired --max-old-space-size=2048 build --scripts-version react-scripts-ts",
     "build:app": "rm -rf ./dist && electron-builder build --win --x64 && electron-builder build --mac --x64",
-    "deploy": "ssh root@120.78.126.222 'rm -rf /data/classroom' && scp -r ./build/ root@120.78.126.222:/data/classroom"
+    "deploy": "ssh root@120.78.126.222 'rm -rf /data/white-classroom' && scp -r ./build/ root@120.78.126.222:/data/white-classroom"
   },
   "build": {
     "appId": "netless",
