@@ -98,14 +98,12 @@ export class SilverRoom extends ZegoClient {
       });
     };
 
-    if (!this._cacheSDKConfig.loginToken) {
+    if (1 || !this._cacheSDKConfig.loginToken) {
       this._cacheSDKConfig.loginToken = await getLoginToken() as string;
     }
 
-    console.error(this._cacheSDKConfig.loginToken);
     return new Promise((resolve, reject) => {
       this.login(decodeURIComponent(para.roomId), 2, this._cacheSDKConfig.loginToken, streamList => {
-        console.error("++++++",  streamList);
         this.publish(this._cacheSDKConfig.publishStreamId);
         this._cacheSDKConfig.streamList = streamList;
         resolve({ streamList });
