@@ -5,11 +5,11 @@
     "signKey": [96, 37, 191, 76, 225, 16, 66, 218, 58, 160, 246, 171, 248, 20, 158, 204, 72, 138, 52, 8, 69, 172, 96, 119, 37, 28, 0, 99, 75, 198, 214, 154]
   },
   "ossConfigObj": {
-    "accessKeyId": "LTAIwHZFXsXh9yaG",
-    "accessKeySecret": "9FE19EMIG3pWzVElJn1iolz66XxPkO",
-    "bucket": "netless-agora-whiteboard",
+    "accessKeyId": "LTAI4Fv7DfKEtR347iL3uDmu",
+    "accessKeySecret": "ycdfrOnz0a3MbDzi9Px4fqhXfKWqsy",
+    "bucket": "beings",
     "region": "oss-cn-hangzhou",
-    "folder": "ppt",
-    "prefix": "https://netless-agora-whiteboard.oss-cn-hangzhou.aliyuncs.com/"
+    "folder": "test",
+    "prefix": "https://beings.oss-cn-hangzhou.aliyuncs.com/"
   }
 }
