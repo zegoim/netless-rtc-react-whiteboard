@@ -10,6 +10,7 @@ import {
     RoomState,
     RoomWhiteboard,
     WhiteWebSdk,
+    AnimationMode,
 } from "white-react-sdk";
 import * as uuidv4 from "uuid/v4";
 import PageError from "./PageError";
@@ -563,7 +564,7 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
                 originY: - 337.5,
                 width: 1200,
                 height: 675,
-                animationMode: "immediately",
+                animationMode: AnimationMode.Immediately,
             });
             room.addMagixEventListener("handclap", async () => {
                 this.setState({isHandClap: true});

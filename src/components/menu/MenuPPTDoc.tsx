@@ -1,7 +1,7 @@
 import * as React from "react";
 import "./MenuPPTDoc.less";
 import PPTDatas, {PPTDataType, PPTType} from "./PPTDatas";
-import {Room} from "white-react-sdk";
+import {Room, AnimationMode} from "white-react-sdk";
 import close from "../../assets/image/close_white.svg";
 
 export type MenuPPTDocProps = {
@@ -77,7 +77,7 @@ class MenuPPTDoc extends React.Component<MenuPPTDocProps, MenuPPTDocStates> {
             originY: - 337.5,
             width: 1200,
             height: 675,
-            animationMode: "immediately",
+            animationMode: AnimationMode.Immediately,
         });
     }
 

@@ -2,7 +2,7 @@ import * as React from "react";
 import close from "../../assets/image/close.svg";
 import add_icon from "../../assets/image/add_icon.svg";
 import TweenOne from "rc-tween-one";
-import {Room, RoomState, Scene} from "white-react-sdk";
+import {Room, RoomState, WhiteScene} from "white-react-sdk";
 import html2canvas from "html2canvas";
 import "./MenuAnnexBox.less";
 
@@ -86,7 +86,7 @@ class MenuAnnexBox extends React.Component<MenuAnnexBoxProps, MenuAnnexBoxState>
         const sceneDir = roomState.sceneState.scenePath.split("/");
         sceneDir.pop();
         const activeIndex = roomState.sceneState.index;
-        const renderPages = scenes.map((scene: Scene, index: number): React.ReactNode => {
+        const renderPages = scenes.map((scene: WhiteScene, index: number): React.ReactNode => {
             const isActive = index === activeIndex;
             return (
                     <div
@@ -151,7 +151,7 @@ class MenuAnnexBox extends React.Component<MenuAnnexBoxProps, MenuAnnexBoxState>
     }
 }
 
-export type PageImageProps = { scene: Scene, path: string, room: Room, isMenuOpen: boolean, isActive: boolean};
+export type PageImageProps = { scene: WhiteScene, path: string, room: Room, isMenuOpen: boolean, isActive: boolean};
 
 class PageImage extends React.Component<PageImageProps, {}> {
 

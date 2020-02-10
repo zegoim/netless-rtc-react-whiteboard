@@ -21,6 +21,7 @@ import {
     MemberState,
     ViewMode,
     DeviceType,
+    AnimationMode,
 } from "white-react-sdk";
 import "white-web-sdk/style/index.css";
 import "./WhiteboardPage.less";
@@ -175,7 +176,7 @@ class WhiteboardPage extends React.Component<WhiteboardPageProps, WhiteboardPage
                 originY: - 337.5,
                 width: 1200,
                 height: 675,
-                animationMode: "immediately",
+                animationMode: AnimationMode.Immediately,
             });
             if (this.props.match.params.netlessRoomType === NetlessRoomType.live) {
                 await room.setWritable(false);

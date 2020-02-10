@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Icon} from "antd";
-import {WhiteWebSdk, PlayerWhiteboard, PlayerPhase, Player, Room} from "white-react-sdk";
+import {WhiteWebSdk, PlayerWhiteboard, PlayerPhase, Player, Room, AnimationMode} from "white-react-sdk";
 import "./ClassroomPlayerPage.less";
 import {RouteComponentProps} from "react-router";
 import SeekSlider from "@netless/react-seek-slider";
@@ -136,7 +136,7 @@ export default class PlayerPage extends React.Component<PlayerPageProps, PlayerP
                 originY: - 337.5,
                 width: 1200,
                 height: 675,
-                animationMode: "immediately",
+                animationMode: AnimationMode.Immediately,
             });
         }
     }
