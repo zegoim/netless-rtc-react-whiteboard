@@ -454,6 +454,7 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
                                         </div>
 
                                         <video
+                                            muted={netlessRoomType === NetlessRoomType.teacher_interactive}
                                             style={{ width: "100%", height: "100%", objectFit: "cover" }}
                                             ref={videoEl => this.videoEl = videoEl}
                                             autoPlay
