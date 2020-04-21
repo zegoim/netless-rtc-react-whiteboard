@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@livechat/ui-kit": "^0.4.0-5",
+    "@netless/cursor-adapter": "^0.0.5",
     "@netless/fetch-middleware": "^1.0.4",
     "@netless/i18n-react-router": "^1.0.5",
     "@netless/oss-upload-manager": "^1.0.6",
