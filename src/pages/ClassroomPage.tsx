@@ -322,6 +322,14 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
     }
     public render(): React.ReactNode {
         const {netlessRoomType} = this.props.match.params;
+
+        const videoEl = <video
+            key="staticKey"
+            muted={netlessRoomType === NetlessRoomType.teacher_interactive}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            ref={videoEl => this.videoEl = videoEl}
+            autoPlay
+        />;
         if (this.state.connectedFail) {
             return <PageError/>;
 
@@ -453,12 +461,7 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
                                             {this.state.isMaskAppear ? <img style={{width: 14}} src={close_white}/> : <img src={set_video}/>}
                                         </div>
 
-                                        <video
-                                            muted={netlessRoomType === NetlessRoomType.teacher_interactive}
-                                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                                            ref={videoEl => this.videoEl = videoEl}
-                                            autoPlay
-                                        />
+                                        {videoEl}
 
                                         <div className={isMobile ? "classroom-box-students-video-mb" : "classroom-box-students-video"}>
                                             <div className="classroom-box-student-cell">
@@ -605,12 +608,13 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
 
         if (netlessRoomType === NetlessRoomType.teacher_interactive) {
             const loginRoom = async () => {
-                silverRoom.join({ roomId, userId });
+                await silverRoom.join({ roomId, userId });
                 const publishStreamId = uuidv4();
+                console.log(this.videoEl);
                 if (this.videoEl) {
                     await silverRoom.startPreview(this.videoEl);
                 }
-                silverRoom.publish(publishStreamId);
+                await silverRoom.publish(publishStreamId);
             };
 
             silverRoom.onDisconnect = loginRoom;
@@ -621,6 +625,7 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
                     const firstStream = streamList[0];
                     if (firstStream && this.videoEl) {
                         this.remoteStreamId = firstStream.stream_id;
+                        console.log({ viewEl: this.videoEl, streamId: this.remoteStreamId });
                         silverRoom.playStream({ viewEl: this.videoEl, streamId: this.remoteStreamId });
                     }
                 };

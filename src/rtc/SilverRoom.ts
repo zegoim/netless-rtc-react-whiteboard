@@ -64,11 +64,12 @@ export class SilverRoom extends ZegoClient {
     this._cacheSDKConfig.userId = idName;
     const nickName = para.userName || para.userId;
     this._cacheSDKConfig.userName = nickName;
+    const isTestEnv = true;
 
-    this._cacheSDKConfig.loginTokenUrl = this._cacheSDKConfig.appVersion === "国内版" ? `https://wsliveroom${this._cacheSDKConfig.appId}-api.zego.im:8282/token` : `https://wsliveroom${this._cacheSDKConfig.appId}-api.zegocloud.com:8282/token`;
+    // this._cacheSDKConfig.loginTokenUrl = this._cacheSDKConfig.appVersion === "国内版" ? `https://wsliveroom${this._cacheSDKConfig.appId}-api.zego.im:8282/token` : `https://wsliveroom${this._cacheSDKConfig.appId}-api.zegocloud.com:8282/token`;
     const zegoConfig: Config = {
       appid: this._cacheSDKConfig.appId,
-      server: this._cacheSDKConfig.appVersion === "国内版" ? `wss://wsliveroom${this._cacheSDKConfig.appId}-api.zego.im:8282/ws` : `wss://wsliveroom${this._cacheSDKConfig.appId}-api.zegocloud.com:8282/ws`,
+      server: isTestEnv ? "wss://webliveroom-test.zego.im/ws" : this._cacheSDKConfig.appVersion === "国内版" ? `wss://wsliveroom${this._cacheSDKConfig.appId}-api.zego.im:8282/ws` : `wss://wsliveroom${this._cacheSDKConfig.appId}-api.zegocloud.com:8282/ws`,
       idName,
       nickName,
       logLevel: 3,
@@ -93,6 +94,7 @@ export class SilverRoom extends ZegoClient {
       return Promise.resolve(token);
     };
 
+    // old get token method.
     // const getLoginToken = () => {
     //   return new Promise((resolve, reject) => {
     //     fetch(`${this._cacheSDKConfig.loginTokenUrl}?app_id=${this._cacheSDKConfig.appId}&id_name=${this._cacheSDKConfig.userId}`, {
@@ -118,7 +120,6 @@ export class SilverRoom extends ZegoClient {
 
     return new Promise((resolve, reject) => {
       this.login(decodeURIComponent(para.roomId), 2, this._cacheSDKConfig.loginToken, streamList => {
-        this.publish(this._cacheSDKConfig.publishStreamId);
         this._cacheSDKConfig.streamList = streamList;
         resolve({ streamList });
         if (this.handleStreamsUpdate) {
@@ -210,11 +211,14 @@ export class SilverRoom extends ZegoClient {
    * @param {string} stream.streamId - 播放音视频的流 id
    */
   playStream = (stream: { viewEl: HTMLCanvasElement | HTMLVideoElement, streamId: string }) => {
+    console.log(stream.streamId, stream.viewEl);
     const code = this.startPlayingStream(stream.streamId, stream.viewEl);
+    console.log(code);
     if (!this._cacheSDKConfig.playingStreamIds.includes(stream.streamId)) {
       this._cacheSDKConfig.playingStreamIds.push(stream.streamId);
     }
   }
+
   /**
    * 播放一组音视频流
    * 
