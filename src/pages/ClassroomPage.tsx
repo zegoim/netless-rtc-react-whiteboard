@@ -610,7 +610,6 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
             const loginRoom = async () => {
                 await silverRoom.join({ roomId, userId });
                 const publishStreamId = uuidv4();
-                console.log(this.videoEl);
                 if (this.videoEl) {
                     await silverRoom.startPreview(this.videoEl);
                 }
@@ -625,7 +624,6 @@ class ClassroomPage extends React.Component<ClassroomProps, ClassroomState> {
                     const firstStream = streamList[0];
                     if (firstStream && this.videoEl) {
                         this.remoteStreamId = firstStream.stream_id;
-                        console.log({ viewEl: this.videoEl, streamId: this.remoteStreamId });
                         silverRoom.playStream({ viewEl: this.videoEl, streamId: this.remoteStreamId });
                     }
                 };

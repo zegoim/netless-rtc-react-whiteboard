@@ -1,6 +1,7 @@
 /* tslint:disable */
-import { ZegoClient } from "../rtc/webrtc-zego";
-import { MediaStreamConstraints, Config, StreamInfo } from "../rtc/webrtc-zego/sdk/common/zego.entity";
+// old require v1.2.2
+import { ZegoClient } from "webrtc-zego";
+import { MediaStreamConstraints, Config, StreamInfo } from "webrtc-zego/sdk/common/zego.entity";
 
 interface SilverRoomCache {
   appId: number;
@@ -75,8 +76,7 @@ export class SilverRoom extends ZegoClient {
       logLevel: 3,
       logUrl: "",
       audienceCreateRoom: true,
-      remoteLogLevel: 0,
-      testEnvironment: false
+      remoteLogLevel: 0
     };
     this.config(zegoConfig);
 
