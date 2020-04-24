@@ -79,24 +79,38 @@ export class SilverRoom extends ZegoClient {
     };
     this.config(zegoConfig);
 
-    const getLoginToken = () => {
-      return new Promise((resolve, reject) => {
-        fetch(`${this._cacheSDKConfig.loginTokenUrl}?app_id=${this._cacheSDKConfig.appId}&id_name=${this._cacheSDKConfig.userId}`, {
-          method: "GET"
-        })
-        .then(res => {
-          if (typeof res === "string") {
-            resolve(res as string);
-          } else {
-            res.text().then((text: any) => {
-              resolve(text as string);
-            });
-          }
-          return res;
-        })
-        .catch(reject);
-      });
+    const getLoginToken = async () => {
+      const appId = this._cacheSDKConfig.appId;
+      const secret = this._cacheSDKConfig.signKey;
+      const userId = this._cacheSDKConfig.userId;
+
+      const now = new Date().getTime();
+      const expired = Math.floor(now / 1000 + 30 * 120);
+      const res = await fetch(`https://sig-wstoken.zego.im:8282/tokenverify?app_id=${appId}&app_secret=${secret}&nonce=${now}&id_name=${userId}&expired=${expired}`);
+      let token: string = await res.text();
+      token = (token.match(/.*token:\s*(\w+)\s*/) as string[])[1];
+      
+      return Promise.resolve(token);
     };
+
+    // const getLoginToken = () => {
+    //   return new Promise((resolve, reject) => {
+    //     fetch(`${this._cacheSDKConfig.loginTokenUrl}?app_id=${this._cacheSDKConfig.appId}&id_name=${this._cacheSDKConfig.userId}`, {
+    //       method: "GET"
+    //     })
+    //     .then(res => {
+    //       if (typeof res === "string") {
+    //         resolve(res as string);
+    //       } else {
+    //         res.text().then((text: any) => {
+    //           resolve(text as string);
+    //         });
+    //       }
+    //       return res;
+    //     })
+    //     .catch(reject);
+    //   });
+    // };
 
     if (1 || !this._cacheSDKConfig.loginToken) {
       this._cacheSDKConfig.loginToken = await getLoginToken() as string;
